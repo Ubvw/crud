@@ -70,7 +70,7 @@ app.put("/loyalties/:id", async (req, res) => {
 
 
 //delete a loyalty card
-app.delete("/loyalties/:id" async (req, res) => {
+app.delete("/loyalties/:id", async (req, res) => {
     try{
         const [ id ] = req.params;
         const deleteLoyalty = await pool.query("DELETE FROM loyalty WHERE id = $1", [id]);
