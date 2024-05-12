@@ -9,21 +9,52 @@ app.use(cors());
 app.use(express.json()); //req.body
 
 
+pool.query('SELECT NOW()', (err, res) => {
+    if (err) {
+        console.error('Error executing query', err);
+    } else {
+        console.log('PostgreSQL time:', res.rows[0].now);
+    }
+});
+
 //routes
 
 //create
+function calculateDates(dateCreation) {
+    const expiryDate = new Date(dateCreation);
+    expiryDate.setFullYear(expiryDate.getFullYear() + 5); // Add 5 years
+    const today = new Date();
+    const remainingDays = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+    return { date_expiry: expiryDate, days_remaining: remainingDays };
+  }
+  
 app.post("/loyalties", async (req, res) => {
-    try{
-        //set val
-        const { first_name, last_name } = req.body;
-        const newLoyalty = await pool.query("INSERT INTO loyalty (first_name, last_name) VALUES ($1, $2) RETURNING *", [first_name, last_name]);
+try {
+    const { first_name, last_name } = req.body;
+    const { date_expiry, days_remaining } = calculateDates(new Date());
+    
+    const newLoyalty = await pool.query(
+    "INSERT INTO loyalty (first_name, last_name, date_creation, date_expiry, days_remaining) VALUES ($1, $2, CURRENT_DATE, $3, $4) RETURNING *",
+    [first_name, last_name, date_expiry, days_remaining]
+    );
 
-        res.json(newLoyalty.rows[0]);
-    } catch (err) {
-      console.error("Error creating loyalty card: ", err.message);
-      res.status(500).send("Server Error");  
-    }
+    res.json(newLoyalty.rows[0]);
+} catch (err) {
+    console.error("Error creating loyalty card: ", err.message);
+    res.status(500).send("Server Error");
+}
 });
+
+
+
+
+
+
+
+
+
+
+
 
 
 //search by ID

@@ -7,4 +7,12 @@ const pool = new Pool({
     database: "crud"
 })
 
+pool.connect((err, client, release) => {
+    if (err) {
+        return console.error('Error acquiring client', err.stack)
+    }
+    console.log('Connected to PostgreSQL database');
+    client.release();
+});
+
 module.exports = pool;
