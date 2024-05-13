@@ -18,7 +18,7 @@ const CreateLoyaltyCard = () => {
     } catch (err) {
       console.error(err.message);
     }
-  };
+};
 
   return (
     <Fragment>
