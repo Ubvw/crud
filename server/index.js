@@ -18,43 +18,27 @@ pool.query('SELECT NOW()', (err, res) => {
 });
 
 //routes
-
 //create
-function calculateDates(dateCreation) {
-    const expiryDate = new Date(dateCreation);
-    expiryDate.setFullYear(expiryDate.getFullYear() + 5); // Add 5 years
-    const today = new Date();
-    const remainingDays = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
-    return { date_expiry: expiryDate, days_remaining: remainingDays };
-  }
-  
 app.post("/loyalties", async (req, res) => {
-try {
-    const { first_name, last_name } = req.body;
-    const { date_expiry, days_remaining } = calculateDates(new Date());
-    
-    const newLoyalty = await pool.query(
-    "INSERT INTO loyalty (first_name, last_name, date_creation, date_expiry, days_remaining) VALUES ($1, $2, CURRENT_DATE, $3, $4) RETURNING *",
-    [first_name, last_name, date_expiry, days_remaining]
-    );
+    try {
+        const { first_name, last_name } = req.body;
+   
+        const currentDate = new Date();
+        const expiryDate = new Date(currentDate);
+        expiryDate.setFullYear(currentDate.getFullYear() + 5);
 
-    res.json(newLoyalty.rows[0]);
-} catch (err) {
-    console.error("Error creating loyalty card: ", err.message);
-    res.status(500).send("Server Error");
-}
+        // Insert the loyalty record with the calculated date_expiry
+        const newLoyalty = await pool.query(
+            "INSERT INTO loyalty (first_name, last_name, date_creation, date_expiry) VALUES ($1, $2, CURRENT_TIMESTAMP, $3) RETURNING *",
+            [first_name, last_name, expiryDate]
+        );
+
+        res.json(newLoyalty.rows[0]);
+    } catch (err) {
+        console.error("Error creating loyalty card: ", err.message);
+        res.status(500).send("Server Error");
+    }
 });
-
-
-
-
-
-
-
-
-
-
-
 
 
 //search by ID
@@ -77,14 +61,14 @@ app.get("/loyalties/:id", async (req, res) =>{
 //Display all loyalty cards
 app.get("/loyalties", async (req, res) => {
     try {
-        const loyaltyList = await pool.query("SELECT first_name, last_name, date_creation, date_expiry, remaining FROM loyalty");
+        const loyaltyList = await pool.query("SELECT id, first_name, last_name, date_creation, date_expiry FROM loyalty");
 
         res.json(loyaltyList.rows);
     } catch (err){
         console.error("Error displaying loyalty cards list: ", err.message);
     }
-    
 });
+
 
 //update a loyalty card
 app.put("/loyalties/:id", async (req, res) => {
