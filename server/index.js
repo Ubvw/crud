@@ -37,7 +37,6 @@ app.post("/loyalties", async (req, res) => {
   }
 });
 
-
 // Display all loyalty cards
 app.get("/loyalties", async (req, res) => {
   try {

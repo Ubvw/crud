@@ -15,18 +15,21 @@ const EditLoyaltyCard = ({ card }) => {
     e.preventDefault();
     try {
       const body = { first_name, last_name };
-      const response = await fetch(`http://localhost:5000/loyalties/${card.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
-      });
-      
+      const response = await fetch(
+        `http://localhost:5000/loyalties/${card.id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        }
+      );
+
       if (response.ok) {
         handleClose();
       } else {
         console.error("Failed to update loyalty card");
       }
-      window.location = '/';
+      window.location = "/";
     } catch (err) {
       console.error(err.message);
     }
@@ -48,14 +51,14 @@ const EditLoyaltyCard = ({ card }) => {
             className="form-control mb-2"
             placeholder="Firstname"
             value={first_name}
-            onChange={e => setFirstname(e.target.value)}
+            onChange={(e) => setFirstname(e.target.value)}
           />
           <input
             type="text"
             className="form-control mb-2"
             placeholder="Lastname"
             value={last_name}
-            onChange={e => setLastname(e.target.value)}
+            onChange={(e) => setLastname(e.target.value)}
           />
         </Modal.Body>
         <Modal.Footer>
