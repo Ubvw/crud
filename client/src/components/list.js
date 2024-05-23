@@ -5,6 +5,7 @@ const ListLoyaltyCard = () => {
   const [cards, setCards] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredCards, setFilteredCards] = useState([]);
+  const [sortedCards, setSortedCards] = useState([]);
 
   // Delete loyalty card
   const deleteLoyaltyCard = async (id) => {
@@ -28,7 +29,13 @@ const ListLoyaltyCard = () => {
     try {
       const response = await fetch("http://localhost:5000/loyalties");
       const jsonData = await response.json();
-      setCards(jsonData); // Update state with fetched data
+      setCards(jsonData); 
+
+      // Sort the cards based on date_creation property
+      const sorted = [...jsonData].sort(
+        (a, b) => new Date(b.date_creation) - new Date(a.date_creation)
+      );
+      setSortedCards(sorted); // Update sortedCards state
     } catch (err) {
       console.log(err.message);
     }
@@ -39,12 +46,13 @@ const ListLoyaltyCard = () => {
   }, []); // Add an empty dependency array to run this effect only once
 
   useEffect(() => {
+    
     // Filter the cards based on search query
-    const filtered = cards.filter((card) =>
+    const filtered = sortedCards.filter((card) =>
       card.first_name.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredCards(filtered);
-  }, [searchQuery, cards]);
+  }, [searchQuery, sortedCards]);
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);

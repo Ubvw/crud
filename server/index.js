@@ -1,3 +1,5 @@
+
+
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -81,7 +83,7 @@ app.get("/loyalties", async (req, res) => {
 // Update a loyalty card
 app.put("/loyalties/:id", async (req, res) => {
   try {
-    const { id } = req.params; // Fix: Corrected the destructuring of req.params
+    const { id } = req.params; 
     const { first_name, last_name } = req.body;
     const updateLoyalty = await pool.query(
       "UPDATE loyalty SET first_name = $1, last_name = $2 WHERE id = $3 RETURNING *",
@@ -97,7 +99,7 @@ app.put("/loyalties/:id", async (req, res) => {
 // Delete a loyalty card
 app.delete("/loyalties/:id", async (req, res) => {
   try {
-    const { id } = req.params; // Fix: Corrected the destructuring of req.params
+    const { id } = req.params; 
     const deleteLoyalty = await pool.query(
       "DELETE FROM loyalty WHERE id = $1",
       [id]
@@ -109,6 +111,7 @@ app.delete("/loyalties/:id", async (req, res) => {
   }
 });
 
-app.listen(5000, () => {
-  console.log("Server has started on port 5000");
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server has started on port ${PORT}`);
 });
